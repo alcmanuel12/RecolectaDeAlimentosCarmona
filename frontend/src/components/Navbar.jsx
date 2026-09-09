@@ -13,13 +13,8 @@ export default function Navbar() {
   return (
     <header className="navbar">
       <Link to="/" className="navbar-brand">
-        <span className="navbar-brand-icon" aria-hidden="true">
-          🤝
-        </span>
-        <span className="navbar-brand-text">
-          <span className="navbar-brand-title">Recogidas Solidarias</span>
-          <span className="navbar-brand-subtitle">Carmona</span>
-        </span>
+        <span className="navbar-brand-title">Recogida Solidaria</span>
+        <span className="navbar-brand-subtitle">Consejo de Hermandades y Cofradías de Carmona</span>
       </Link>
       <nav className="navbar-links">
         <Link to="/transparencia">Transparencia</Link>

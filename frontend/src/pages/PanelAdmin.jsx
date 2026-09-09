@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import AdminRecolectores from './admin/AdminRecolectores';
 import AdminProductos from './admin/AdminProductos';
 import AdminTurnos from './admin/AdminTurnos';
@@ -12,18 +13,21 @@ const PESTANAS = [
 ];
 
 export default function PanelAdmin() {
+  const { recolector } = useAuth();
   const [pestanaActiva, setPestanaActiva] = useState('recolectores');
   const Activa = PESTANAS.find((p) => p.id === pestanaActiva).Componente;
 
   return (
     <div className="page">
-      <div className="hero-banner">
-        <div>
-          <h1>Panel de administrador</h1>
-          <p>Gestiona recolectores, catálogo, turnos e informes de la hermandad.</p>
-        </div>
+      <div className="dateline">
+        <span>Panel del Consejo</span>
+        <span>{recolector?.nombre} · admin</span>
       </div>
-      <div className="tabs">
+      <h1 style={{ marginTop: 18 }}>Administración</h1>
+      <p className="page-subtitle" style={{ maxWidth: '62ch' }}>
+        Gestiona recolectores, catálogo, turnos e informes de la hermandad.
+      </p>
+      <div className="tabs" style={{ marginTop: 24 }}>
         {PESTANAS.map((p) => (
           <button
             key={p.id}

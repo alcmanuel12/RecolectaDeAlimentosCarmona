@@ -136,7 +136,9 @@ export default function AdminProductos() {
                 />
                 {' €'}
               </td>
-              <td>{p.activo ? 'Activo' : 'Baja'}</td>
+              <td>
+                <span className={`tag ${p.activo ? 'tag-accent' : 'tag-neutral'}`}>{p.activo ? 'Activo' : 'Baja'}</span>
+              </td>
               <td className="table-acciones">
                 <button className="btn btn-link" onClick={() => handleToggleActivo(p)}>
                   {p.activo ? 'Dar de baja' : 'Reactivar'}

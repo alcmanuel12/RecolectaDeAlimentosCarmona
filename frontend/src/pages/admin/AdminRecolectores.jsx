@@ -155,8 +155,12 @@ export default function AdminRecolectores() {
               <td>{r.email}</td>
               <td>{r.hermandad}</td>
               <td>{r.zonaTexto}</td>
-              <td>{r.rol}</td>
-              <td>{r.activo ? 'Activo' : 'Baja'}</td>
+              <td>
+                <span className={`tag ${r.rol === 'admin' ? 'tag-outline' : 'tag-neutral'}`}>{r.rol}</span>
+              </td>
+              <td>
+                <span className={`tag ${r.activo ? 'tag-accent' : 'tag-neutral'}`}>{r.activo ? 'Activo' : 'Baja'}</span>
+              </td>
               <td className="table-acciones">
                 <button className="btn btn-link" onClick={() => handleCambiarRol(r)}>
                   {r.rol === 'admin' ? 'Quitar admin' : 'Hacer admin'}

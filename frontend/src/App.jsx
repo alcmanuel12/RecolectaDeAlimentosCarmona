@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
 import PanelRecolector from './pages/PanelRecolector';
@@ -12,10 +13,10 @@ import PanelAdmin from './pages/PanelAdmin';
 import Transparencia from './pages/Transparencia';
 
 function Inicio() {
-  const { esAdmin } = useAuth();
-  return (
-    <ProtectedRoute>{esAdmin ? <PanelAdmin /> : <PanelRecolector />}</ProtectedRoute>
-  );
+  const { recolector, esAdmin, cargando } = useAuth();
+  if (cargando) return <div className="page-loading">Cargando…</div>;
+  if (!recolector) return <Landing />;
+  return esAdmin ? <PanelAdmin /> : <PanelRecolector />;
 }
 
 export default function App() {

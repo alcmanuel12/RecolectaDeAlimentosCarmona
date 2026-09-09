@@ -26,36 +26,51 @@ export default function Login() {
   }
 
   return (
-    <div className="auth-layout">
-      <div className="auth-hero">
-        <span className="auth-hero-badge">Recogidas Solidarias</span>
-        <h2>Bienvenido de nuevo</h2>
-        <p>
-          Accede a tu cuenta de recolector para abrir tu turno y seguir registrando donaciones para
-          la hermandad.
-        </p>
-      </div>
-      <div className="auth-form-panel">
-        <div className="auth-form-panel-inner">
-          <h1>Iniciar sesión</h1>
-          <form className="form" onSubmit={handleSubmit}>
-            <label>
-              Email
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus />
-            </label>
-            <label>
-              Contraseña
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            </label>
-            {error && <p className="form-error">{error}</p>}
-            <button className="btn btn-primary" type="submit" disabled={enviando}>
-              {enviando ? 'Entrando…' : 'Entrar'}
-            </button>
-          </form>
-          <p>
-            ¿No tienes cuenta todavía? <Link to="/registro">Regístrate como recolector</Link>
-          </p>
+    <div className="auth-page">
+      <div className="auth-kicker">Acceso restringido</div>
+      <h1 className="auth-title">Iniciar sesión</h1>
+      <p className="auth-lead">
+        Sólo para recolectores acreditados por su hermandad. El acceso queda registrado en el
+        histórico del turno.
+      </p>
+
+      <form className="form" onSubmit={handleSubmit} style={{ marginTop: 26 }}>
+        <div className="field">
+          <label htmlFor="lg-email">Correo electrónico</label>
+          <input
+            className="input"
+            id="lg-email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoFocus
+          />
         </div>
+        <div className="field">
+          <label htmlFor="lg-pass">Contraseña</label>
+          <input
+            className="input"
+            id="lg-pass"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        {error && <p className="form-error">{error}</p>}
+        <button className="btn btn-primary btn-block" type="submit" disabled={enviando}>
+          {enviando ? 'Entrando…' : 'Entrar'}
+        </button>
+      </form>
+
+      <p className="auth-foot">
+        ¿Aún no tienes cuenta? <Link to="/registro">Regístrate como recolector</Link>
+      </p>
+
+      <div className="landing-note" style={{ marginTop: 34 }}>
+        La app no procesa pagos con tarjeta. Los cobros se hacen con el datáfono físico de la
+        hermandad.
       </div>
     </div>
   );

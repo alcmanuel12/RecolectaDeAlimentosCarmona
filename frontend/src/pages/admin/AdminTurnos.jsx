@@ -70,7 +70,9 @@ export default function AdminTurnos() {
                   {t.totalEfectivoEntregado !== null ? `${t.totalEfectivoEntregado.toFixed(2)} €` : '—'}
                 </td>
                 <td>{t.totalTarjeta.toFixed(2)} €</td>
-                <td>{t.cerrado ? 'Cerrado' : 'Abierto'}</td>
+                <td>
+                  <span className={`tag ${t.cerrado ? 'tag-neutral' : 'tag-accent'}`}>{t.cerrado ? 'Cerrado' : 'Abierto'}</span>
+                </td>
                 <td>{t.notasCierre || '—'}</td>
               </tr>
             ))}

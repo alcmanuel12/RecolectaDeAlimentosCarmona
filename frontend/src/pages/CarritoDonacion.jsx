@@ -4,7 +4,7 @@ import { listarProductos } from '../api/productos';
 import { obtenerTurnoActivo } from '../api/turnos';
 import { crearDonacion } from '../api/donaciones';
 import { extraerError } from '../api/client';
-import ProductCard, { ETIQUETAS_CATEGORIA, ICONOS_CATEGORIA } from '../components/ProductCard';
+import ProductCard, { ETIQUETAS_CATEGORIA } from '../components/ProductCard';
 import Carrito from '../components/Carrito';
 
 function normalizar(texto) {
@@ -95,6 +95,12 @@ export default function CarritoDonacion() {
     return grupos;
   }, [productosFiltrados]);
 
+  const importeRecibidoNum = Number(importeRecibidoEfectivo);
+  const cambio =
+    metodoPago === 'efectivo' && importeRecibidoEfectivo !== '' && !Number.isNaN(importeRecibidoNum)
+      ? importeRecibidoNum - total
+      : null;
+
   function cambiarCantidad(producto, nuevaCantidad) {
     setCantidades((c) => ({ ...c, [producto.id]: nuevaCantidad }));
   }
@@ -146,7 +152,10 @@ export default function CarritoDonacion() {
 
   return (
     <div className="page carrito-page">
-      <h1>Nueva donación</h1>
+      <h1>Elige los productos</h1>
+      <p className="page-subtitle" style={{ marginTop: -8 }}>
+        Precio de mercado. La organización compra después estos mismos artículos.
+      </p>
       {error && <p className="form-error">{error}</p>}
 
       {turno && (
@@ -156,32 +165,32 @@ export default function CarritoDonacion() {
               <div className="catalogo-controles">
                 <input
                   type="search"
-                  className="catalogo-buscador"
+                  className="input"
                   placeholder="Buscar producto…"
                   value={busqueda}
                   onChange={(e) => setBusqueda(e.target.value)}
                   aria-label="Buscar producto"
                 />
                 <div className="categoria-pills">
-                  <button
-                    type="button"
-                    className={`categoria-pill ${categoriaActiva === 'todos' ? 'categoria-pill-activa' : ''}`}
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    className={`tag ${categoriaActiva === 'todos' ? 'tag-accent' : 'tag-outline'}`}
                     onClick={() => setCategoriaActiva('todos')}
                   >
                     Todos
-                  </button>
+                  </span>
                   {categoriasDisponibles.map((cat) => (
-                    <button
+                    <span
                       key={cat}
-                      type="button"
-                      className={`categoria-pill ${categoriaActiva === cat ? 'categoria-pill-activa' : ''}`}
+                      role="button"
+                      tabIndex={0}
+                      className={`tag ${categoriaActiva === cat ? 'tag-accent' : 'tag-outline'}`}
                       onClick={() => setCategoriaActiva(cat)}
                     >
-                      <span aria-hidden="true">{ICONOS_CATEGORIA[cat]}</span> {ETIQUETAS_CATEGORIA[cat] || cat}
-                      {unidadesPorCategoria[cat] > 0 && (
-                        <span className="categoria-pill-badge">{unidadesPorCategoria[cat]}</span>
-                      )}
-                    </button>
+                      {ETIQUETAS_CATEGORIA[cat] || cat}
+                      {unidadesPorCategoria[cat] > 0 && ` · ${unidadesPorCategoria[cat]}`}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -192,11 +201,8 @@ export default function CarritoDonacion() {
 
               {Object.entries(productosPorCategoria).map(([categoria, lista]) => (
                 <section key={categoria} className="categoria-section">
-                  <h2>
-                    <span aria-hidden="true">{ICONOS_CATEGORIA[categoria]}</span>{' '}
-                    {ETIQUETAS_CATEGORIA[categoria] || categoria}
-                  </h2>
-                  <div className="product-grid">
+                  <h6>{ETIQUETAS_CATEGORIA[categoria] || categoria}</h6>
+                  <div className="price-list">
                     {lista.map((p) => (
                       <ProductCard
                         key={p.id}
@@ -214,65 +220,73 @@ export default function CarritoDonacion() {
               <h2>Resumen</h2>
               <Carrito lineas={lineasCarrito} total={total} />
 
-              <label>
-                Nombre del donante (opcional)
-                <input value={nombreDonante} onChange={(e) => setNombreDonante(e.target.value)} />
-              </label>
-              <label>
-                Email del donante (opcional, para el correo de agradecimiento)
-                <input type="email" value={emailDonante} onChange={(e) => setEmailDonante(e.target.value)} />
-              </label>
+              <div className="field">
+                <label htmlFor="don-nombre">Nombre del donante (opcional)</label>
+                <input className="input" id="don-nombre" value={nombreDonante} onChange={(e) => setNombreDonante(e.target.value)} />
+              </div>
+              <div className="field">
+                <label htmlFor="don-email">Email del donante (opcional, para el correo de agradecimiento)</label>
+                <input className="input" id="don-email" type="email" value={emailDonante} onChange={(e) => setEmailDonante(e.target.value)} />
+              </div>
 
-              <fieldset className="metodo-pago">
-                <legend>Método de pago</legend>
-                <label className="radio-label">
-                  <input
-                    type="radio"
-                    name="metodoPago"
-                    value="tarjeta"
-                    checked={metodoPago === 'tarjeta'}
-                    onChange={() => setMetodoPago('tarjeta')}
-                  />
-                  Tarjeta (datáfono físico)
-                </label>
-                <label className="radio-label">
-                  <input
-                    type="radio"
-                    name="metodoPago"
-                    value="efectivo"
-                    checked={metodoPago === 'efectivo'}
-                    onChange={() => setMetodoPago('efectivo')}
-                  />
-                  Efectivo
-                </label>
-              </fieldset>
+              <div className="field">
+                <label>Método de pago</label>
+                <div className="seg">
+                  <label className="seg-opt">
+                    <input type="radio" name="metodoPago" checked={metodoPago === 'tarjeta'} onChange={() => setMetodoPago('tarjeta')} />
+                    Tarjeta
+                  </label>
+                  <label className="seg-opt">
+                    <input type="radio" name="metodoPago" checked={metodoPago === 'efectivo'} onChange={() => setMetodoPago('efectivo')} />
+                    Efectivo
+                  </label>
+                </div>
+              </div>
 
               {metodoPago === 'tarjeta' && (
-                <label className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={confirmacionDatafono}
-                    onChange={(e) => setConfirmacionDatafono(e.target.checked)}
-                  />
-                  Confirmo que el datáfono ha aprobado la operación
-                </label>
+                <div className="datafono-box">
+                  <h6 style={{ color: 'var(--color-accent-800)' }}>Datáfono físico</h6>
+                  <p style={{ margin: '10px 0 0', color: 'var(--color-accent-900)', fontSize: 14 }}>
+                    Cobra {total.toFixed(2)} € en el datáfono de la hermandad y confirma aquí cuando la operación
+                    quede aprobada. La app no procesa la tarjeta.
+                  </p>
+                  <label className="checkbox-label" style={{ marginTop: 14, display: 'flex' }}>
+                    <input
+                      type="checkbox"
+                      checked={confirmacionDatafono}
+                      onChange={(e) => setConfirmacionDatafono(e.target.checked)}
+                    />
+                    Confirmo que el datáfono ha aprobado la operación
+                  </label>
+                </div>
               )}
 
               {metodoPago === 'efectivo' && (
-                <label>
-                  Importe recibido en efectivo (€)
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={importeRecibidoEfectivo}
-                    onChange={(e) => setImporteRecibidoEfectivo(e.target.value)}
-                  />
-                </label>
+                <div className="efectivo-box">
+                  <div className="field" style={{ marginBottom: 0 }}>
+                    <label htmlFor="don-recibido">Importe recibido en efectivo (€)</label>
+                    <input
+                      id="don-recibido"
+                      className="input efectivo-input"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      inputMode="decimal"
+                      value={importeRecibidoEfectivo}
+                      onChange={(e) => setImporteRecibidoEfectivo(e.target.value)}
+                    />
+                  </div>
+                  {cambio !== null && (
+                    <div className="cambio-row">
+                      <span>Cambio a devolver</span>
+                      <span className={cambio < 0 ? 'cambio-negativo' : ''}>{cambio.toFixed(2)} €</span>
+                    </div>
+                  )}
+                </div>
               )}
 
-              <button className="btn btn-primary" type="submit" disabled={enviando || lineasCarrito.length === 0}>
-                {enviando ? 'Registrando…' : `Confirmar donación (${total.toFixed(2)} €)`}
+              <button className="btn btn-primary btn-block" type="submit" disabled={enviando || lineasCarrito.length === 0}>
+                {enviando ? 'Registrando…' : `Registrar donación · ${total.toFixed(2)} €`}
               </button>
             </form>
           </div>
@@ -283,7 +297,7 @@ export default function CarritoDonacion() {
                 {numeroArticulos} artículo{numeroArticulos !== 1 ? 's' : ''}
               </span>
               <strong>{total.toFixed(2)} €</strong>
-              <span className="mobile-cart-bar-cta">Ver resumen ↓</span>
+              <span className="mobile-cart-bar-cta">Ir al cobro ↓</span>
             </button>
           )}
         </>

@@ -13,7 +13,13 @@ export default function Navbar() {
   return (
     <header className="navbar">
       <Link to="/" className="navbar-brand">
-        🤝 Donaciones Solidarias
+        <span className="navbar-brand-icon" aria-hidden="true">
+          🤝
+        </span>
+        <span className="navbar-brand-text">
+          <span className="navbar-brand-title">Recogidas Solidarias</span>
+          <span className="navbar-brand-subtitle">Carmona</span>
+        </span>
       </Link>
       <nav className="navbar-links">
         <Link to="/transparencia">Transparencia</Link>
@@ -29,7 +35,9 @@ export default function Navbar() {
         ) : (
           <>
             <Link to="/login">Entrar</Link>
-            <Link to="/registro">Registrarse</Link>
+            <Link to="/registro" className="navbar-cta">
+              Registrarse
+            </Link>
           </>
         )}
       </nav>

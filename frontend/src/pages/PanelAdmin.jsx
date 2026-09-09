@@ -17,7 +17,12 @@ export default function PanelAdmin() {
 
   return (
     <div className="page">
-      <h1>Panel de administrador</h1>
+      <div className="hero-banner">
+        <div>
+          <h1>Panel de administrador</h1>
+          <p>Gestiona recolectores, catálogo, turnos e informes de la hermandad.</p>
+        </div>
+      </div>
       <div className="tabs">
         {PESTANAS.map((p) => (
           <button

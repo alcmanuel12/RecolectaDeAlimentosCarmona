@@ -26,25 +26,37 @@ export default function Login() {
   }
 
   return (
-    <div className="page page-narrow">
-      <h1>Iniciar sesión</h1>
-      <form className="form" onSubmit={handleSubmit}>
-        <label>
-          Email
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus />
-        </label>
-        <label>
-          Contraseña
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </label>
-        {error && <p className="form-error">{error}</p>}
-        <button className="btn btn-primary" type="submit" disabled={enviando}>
-          {enviando ? 'Entrando…' : 'Entrar'}
-        </button>
-      </form>
-      <p>
-        ¿No tienes cuenta todavía? <Link to="/registro">Regístrate como recolector</Link>
-      </p>
+    <div className="auth-layout">
+      <div className="auth-hero">
+        <span className="auth-hero-badge">Recogidas Solidarias</span>
+        <h2>Bienvenido de nuevo</h2>
+        <p>
+          Accede a tu cuenta de recolector para abrir tu turno y seguir registrando donaciones para
+          la hermandad.
+        </p>
+      </div>
+      <div className="auth-form-panel">
+        <div className="auth-form-panel-inner">
+          <h1>Iniciar sesión</h1>
+          <form className="form" onSubmit={handleSubmit}>
+            <label>
+              Email
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus />
+            </label>
+            <label>
+              Contraseña
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </label>
+            {error && <p className="form-error">{error}</p>}
+            <button className="btn btn-primary" type="submit" disabled={enviando}>
+              {enviando ? 'Entrando…' : 'Entrar'}
+            </button>
+          </form>
+          <p>
+            ¿No tienes cuenta todavía? <Link to="/registro">Regístrate como recolector</Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

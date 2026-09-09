@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { obtenerTurnoActivo, abrirTurno } from '../api/turnos';
 import { listarDonacionesPorTurno } from '../api/donaciones';
 import { extraerError } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 
 export default function PanelRecolector() {
+  const { recolector } = useAuth();
   const [turno, setTurno] = useState(null);
   const [donaciones, setDonaciones] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -52,12 +54,21 @@ export default function PanelRecolector() {
 
   return (
     <div className="page">
-      <h1>Mi turno de recogida</h1>
+      <div className="hero-banner">
+        <div>
+          <h1>Hola, {recolector?.nombre} 👋</h1>
+          <p>{turno ? 'Tienes un turno abierto ahora mismo.' : 'No tienes ningún turno abierto.'}</p>
+        </div>
+        <span className={`hero-banner-badge ${turno ? 'badge-gold' : ''}`}>
+          {turno ? 'Turno abierto' : 'Sin turno'}
+        </span>
+      </div>
+
       {error && <p className="form-error">{error}</p>}
 
       {!turno && (
         <div className="card">
-          <p>No tienes ningún turno abierto ahora mismo.</p>
+          <p>Abre un turno para empezar a registrar donaciones sobre el terreno.</p>
           <button className="btn btn-primary" onClick={handleAbrirTurno} disabled={abriendo}>
             {abriendo ? 'Abriendo…' : 'Abrir turno'}
           </button>
@@ -66,32 +77,34 @@ export default function PanelRecolector() {
 
       {turno && (
         <>
-          <div className="card">
-            <p>
-              Turno abierto desde <strong>{new Date(turno.fechaInicio).toLocaleString()}</strong>
-            </p>
-            <div className="stat-row">
-              <div className="stat">
-                <span className="stat-label">Efectivo esperado</span>
-                <span className="stat-value">{turno.totalEfectivoEsperado.toFixed(2)} €</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Total tarjeta</span>
-                <span className="stat-value">{turno.totalTarjeta.toFixed(2)} €</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Donaciones</span>
-                <span className="stat-value">{donaciones.length}</span>
-              </div>
+          <p className="page-subtitle">
+            Turno abierto desde <strong>{new Date(turno.fechaInicio).toLocaleString()}</strong>
+          </p>
+
+          <div className="dashboard-grid">
+            <div className="dashboard-tile dashboard-tile-teal">
+              <span className="stat-label">Efectivo esperado</span>
+              <span className="stat-value">{turno.totalEfectivoEsperado.toFixed(2)} €</span>
             </div>
-            <div className="button-row">
-              <Link className="btn btn-primary" to="/carrito">
-                + Nueva donación
-              </Link>
-              <Link className="btn btn-secondary" to="/cierre-turno">
-                Cerrar turno
-              </Link>
+            <div className="dashboard-tile dashboard-tile-blue">
+              <span className="stat-label">Total tarjeta</span>
+              <span className="stat-value">{turno.totalTarjeta.toFixed(2)} €</span>
             </div>
+            <div className="dashboard-tile dashboard-tile-gold">
+              <span className="stat-label">Donaciones</span>
+              <span className="stat-value">{donaciones.length}</span>
+            </div>
+          </div>
+
+          <div className="quick-actions">
+            <Link className="action-card action-card-gold" to="/carrito">
+              <span className="action-card-icon">🛒</span>
+              <span>Nueva donación</span>
+            </Link>
+            <Link className="action-card action-card-teal" to="/cierre-turno">
+              <span className="action-card-icon">🔒</span>
+              <span>Cerrar turno</span>
+            </Link>
           </div>
 
           <h2>Donaciones de este turno</h2>

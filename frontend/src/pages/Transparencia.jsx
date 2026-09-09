@@ -20,25 +20,33 @@ export default function Transparencia() {
 
   return (
     <div className="page">
-      <h1>Panel de transparencia</h1>
-      <p className="page-subtitle">
-        Totales agregados de todas las donaciones registradas. No se muestra ningún dato personal
-        de donantes ni de recolectores.
-      </p>
-
-      <div className="stat-row">
-        <div className="stat stat-large">
-          <span className="stat-label">Total recaudado</span>
-          <span className="stat-value">{datos.totalRecaudado.toFixed(2)} €</span>
+      <div className="hero-banner">
+        <div>
+          <h1>Panel de transparencia</h1>
+          <p>
+            Totales agregados de todas las donaciones registradas. Ningún dato personal de
+            donantes ni de recolectores se muestra aquí.
+          </p>
         </div>
-        <div className="stat stat-large">
+      </div>
+
+      <div className="transparencia-stats">
+        <div className="transparencia-stat-card">
+          <span className="stat-label">Total recaudado</span>
+          <span className="stat-value" style={{ fontSize: '2.3rem' }}>
+            {datos.totalRecaudado.toFixed(2)} €
+          </span>
+        </div>
+        <div className="transparencia-stat-card">
           <span className="stat-label">Nº de donaciones</span>
-          <span className="stat-value">{datos.numeroDonaciones}</span>
+          <span className="stat-value" style={{ fontSize: '2.3rem' }}>
+            {datos.numeroDonaciones}
+          </span>
         </div>
       </div>
 
       <div className="transparencia-grid">
-        <section>
+        <section className="transparencia-seccion transparencia-seccion-blue">
           <h2>Por hermandad</h2>
           <table className="table">
             <thead>
@@ -60,7 +68,7 @@ export default function Transparencia() {
           </table>
         </section>
 
-        <section>
+        <section className="transparencia-seccion transparencia-seccion-teal">
           <h2>Por zona</h2>
           <table className="table">
             <thead>
@@ -82,7 +90,7 @@ export default function Transparencia() {
           </table>
         </section>
 
-        <section>
+        <section className="transparencia-seccion transparencia-seccion-gold">
           <h2>Por categoría de producto</h2>
           <table className="table">
             <thead>

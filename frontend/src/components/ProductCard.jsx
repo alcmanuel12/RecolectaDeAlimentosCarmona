@@ -30,8 +30,31 @@ export default function ProductCard({ producto, cantidad, onCambiarCantidad }) {
 
   const seleccionado = cantidad > 0;
 
+  function anadirUnidad() {
+    onCambiarCantidad(producto, cantidad + 1);
+  }
+
+  function quitarUnidad(e) {
+    e.stopPropagation();
+    onCambiarCantidad(producto, Math.max(0, cantidad - 1));
+  }
+
+  function alPulsarTecla(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      anadirUnidad();
+    }
+  }
+
   return (
-    <div className={`product-card ${seleccionado ? 'product-card-seleccionada' : ''}`}>
+    <div
+      className={`product-card ${seleccionado ? 'product-card-seleccionada' : ''}`}
+      role="button"
+      tabIndex={0}
+      onClick={anadirUnidad}
+      onKeyDown={alPulsarTecla}
+      aria-label={`Añadir una unidad de ${producto.nombre}`}
+    >
       {seleccionado && <span className="product-card-check">✓</span>}
       <div className="product-card-icono" aria-hidden="true">
         {ICONOS_CATEGORIA[producto.categoria] || '🛒'}
@@ -44,21 +67,14 @@ export default function ProductCard({ producto, cantidad, onCambiarCantidad }) {
         <button
           type="button"
           className="btn btn-square"
-          onClick={() => onCambiarCantidad(producto, Math.max(0, cantidad - 1))}
+          onClick={quitarUnidad}
+          onKeyDown={(e) => e.stopPropagation()}
           disabled={cantidad === 0}
           aria-label={`Quitar una unidad de ${producto.nombre}`}
         >
           −
         </button>
         <span className={`product-card-cantidad ${pulso ? 'pulso' : ''}`}>{cantidad}</span>
-        <button
-          type="button"
-          className="btn btn-square btn-square-add"
-          onClick={() => onCambiarCantidad(producto, cantidad + 1)}
-          aria-label={`Añadir una unidad de ${producto.nombre}`}
-        >
-          +
-        </button>
       </div>
     </div>
   );

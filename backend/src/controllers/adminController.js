@@ -8,6 +8,15 @@ function serializar(recolector) {
   return resto;
 }
 
+// Evita CSV Formula Injection: si un valor de texto proveniente de un
+// usuario (nombre de donante, hermandad, zona, etc.) empieza por un carácter
+// que Excel/Sheets interpreta como inicio de fórmula, se antepone un
+// apóstrofo para neutralizarlo al abrir el fichero.
+function sanearCeldaCsv(valor) {
+  if (typeof valor !== 'string') return valor;
+  return /^[=+\-@\t\r]/.test(valor) ? `'${valor}` : valor;
+}
+
 // GET /api/admin/recolectores
 const listarRecolectores = asyncHandler(async (req, res) => {
   const recolectores = await prisma.recolector.findMany({ orderBy: { fechaAlta: 'desc' } });
@@ -90,14 +99,14 @@ const exportarDonacionesCsv = asyncHandler(async (req, res) => {
   const filas = donaciones.map((d) => ({
     id: d.id,
     fecha: d.fecha.toISOString(),
-    recolector: `${d.recolector.nombre} ${d.recolector.apellidos}`,
-    hermandad: d.recolector.hermandad,
-    zona: d.recolector.zonaTexto,
+    recolector: sanearCeldaCsv(`${d.recolector.nombre} ${d.recolector.apellidos}`),
+    hermandad: sanearCeldaCsv(d.recolector.hermandad),
+    zona: sanearCeldaCsv(d.recolector.zonaTexto),
     metodoPago: d.metodoPago,
     importeTotal: d.importeTotal,
-    nombreDonante: d.nombreDonante || '',
-    emailDonante: d.emailDonante || '',
-    productos: d.lineas.map((l) => `${l.cantidad}x ${l.producto.nombre}`).join('; '),
+    nombreDonante: sanearCeldaCsv(d.nombreDonante || ''),
+    emailDonante: sanearCeldaCsv(d.emailDonante || ''),
+    productos: sanearCeldaCsv(d.lineas.map((l) => `${l.cantidad}x ${l.producto.nombre}`).join('; ')),
   }));
 
   const parser = new Parser({

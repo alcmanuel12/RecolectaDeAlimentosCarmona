@@ -212,7 +212,7 @@ export default function CarritoDonacion() {
 
             <form id="resumen" className="resumen-donacion" onSubmit={handleSubmit}>
               <h2>Resumen</h2>
-              <Carrito lineas={lineasCarrito} total={total} />
+              <Carrito lineas={lineasCarrito} total={total} onQuitar={(producto) => cambiarCantidad(producto, 0)} />
 
               <label>
                 Nombre del donante (opcional)

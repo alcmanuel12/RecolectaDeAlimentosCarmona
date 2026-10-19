@@ -8,7 +8,7 @@ garantizada. **La app no es una pasarela de pago** — no procesa tarjetas.
 
 ## Estructura
 
-- [backend/](backend/) — API REST en Node.js + Express + Prisma (SQLite en desarrollo).
+- [backend/](backend/) — API REST en Node.js + Express + Prisma (PostgreSQL).
 - [frontend/](frontend/) — SPA en React (Vite) + React Router.
 
 ## Puesta en marcha (desarrollo)
@@ -18,8 +18,8 @@ garantizada. **La app no es una pasarela de pago** — no procesa tarjetas.
 ```bash
 cd backend
 npm install
-cp .env.example .env      # revisa/edita los valores, sobre todo JWT_SECRET y SMTP
-npm run prisma:migrate    # crea la BBDD SQLite y aplica el esquema
+cp .env.example .env      # revisa/edita los valores, sobre todo DATABASE_URL, JWT_SECRET y SMTP
+npm run prisma:migrate    # aplica el esquema en PostgreSQL (la BBDD debe existir)
 npm run seed               # catálogo de productos + usuarios de prueba
 npm run dev                 # arranca en http://localhost:4000
 ```
@@ -54,10 +54,10 @@ npm run dev                 # arranca en http://localhost:5173
 
 ## Notas de diseño
 
-- SQLite no soporta enums nativos en Prisma: los campos "enum" del modelo de datos
-  original (`categoria`, `metodoPago`, `rol`) se guardan como `String` y se validan
-  en la capa de aplicación (`backend/src/utils/enums.js`). Al migrar a PostgreSQL
-  se pueden convertir a enums nativos sin cambiar la forma de los datos.
+- Los campos "enum" del modelo de datos (`categoria`, `metodoPago`, `rol`) se
+  guardan como `String` y se validan en la capa de aplicación
+  (`backend/src/utils/enums.js`); se pueden convertir a enums nativos de
+  PostgreSQL sin cambiar la forma de los datos.
 - El correo de agradecimiento se envía de forma asíncrona tras responder al
   cliente, y si SMTP no está configurado se omite sin romper el flujo.
 - El endpoint de exportación CSV requiere JWT de administrador, así que el

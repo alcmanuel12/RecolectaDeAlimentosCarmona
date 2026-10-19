@@ -36,14 +36,14 @@ async function main() {
   // contraseña, rol y estado para que el entorno quede siempre igual.
   const usuarios = [
     {
-      email: process.env.ADMIN_EMAIL || 'admin@admin.com',
+      email: (process.env.ADMIN_EMAIL || 'admin@admin.com').trim().toLowerCase(),
       password: process.env.ADMIN_PASSWORD || '12345678',
       nombre: 'Admin',
       apellidos: 'Hermandad',
       rol: 'admin',
     },
     {
-      email: process.env.RECOLECTOR_EMAIL || 'usuario@usuario.com',
+      email: (process.env.RECOLECTOR_EMAIL || 'usuario@usuario.com').trim().toLowerCase(),
       password: process.env.RECOLECTOR_PASSWORD || '12345678',
       nombre: 'Usuario',
       apellidos: 'Recolector',

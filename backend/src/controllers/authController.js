@@ -18,7 +18,8 @@ function serializar(recolector) {
 
 // POST /api/auth/login
 const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { password } = req.body;
+  const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
   if (!email || !password) {
     return res.status(400).json({ error: 'Email y contraseña son obligatorios.' });
   }

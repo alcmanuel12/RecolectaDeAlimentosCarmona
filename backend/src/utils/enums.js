@@ -1,5 +1,5 @@
-// SQLite no soporta enums nativos en Prisma, así que los "enum" del modelo de
-// datos se validan aquí a nivel de aplicación.
+// Los "enum" del modelo de datos se guardan como String y se validan aquí a
+// nivel de aplicación.
 
 const CATEGORIAS_PRODUCTO = ['bebe', 'higiene_femenina', 'no_perecedero', 'otros'];
 

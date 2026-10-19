@@ -1,47 +1,46 @@
 // Esquema de base de datos - App de gestión de recogidas de alimentos benéficas
-// SQLite en desarrollo. SQLite no soporta el tipo enum nativo de Prisma,
-// así que los campos "enum" se modelan como String y se validan en la capa
-// de aplicación (ver src/utils/enums.js). Al migrar a PostgreSQL se pueden
-// convertir a enums nativos de Prisma sin cambiar la forma de los datos.
+// PostgreSQL. Los campos "enum" (categoria, metodoPago, rol) se modelan como
+// String y se validan en la capa de aplicación (ver src/utils/enums.js).
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Recolector {
-  id                 Int      @id @default(autoincrement())
-  nombre             String
-  apellidos          String
-  email              String   @unique
-  dniUltimosDigitos  String   @map("dni_ultimos_digitos")
-  hermandad          String
-  zonaTexto          String   @map("zona_texto")
-  passwordHash       String   @map("password_hash")
-  rol                String   @default("recolector") // recolector | admin
-  fechaAlta          DateTime @default(now()) @map("fecha_alta")
-  activo             Boolean  @default(true)
+  id                Int      @id @default(autoincrement())
+  nombre            String
+  apellidos         String
+  email             String   @unique
+  dniUltimosDigitos String   @map("dni_ultimos_digitos")
+  hermandad         String
+  zonaTexto         String   @map("zona_texto")
+  passwordHash      String   @map("password_hash")
+  rol               String   @default("recolector") // recolector | admin
+  fechaAlta         DateTime @default(now()) @map("fecha_alta")
+  activo            Boolean  @default(true)
 
-  turnos    TurnoRecogida[]
+  turnos     TurnoRecogida[]
   donaciones Donacion[]
 
   @@map("recolectores")
 }
 
 model TurnoRecogida {
-  id                       Int       @id @default(autoincrement())
-  recolectorId             Int       @map("recolector_id")
-  fechaInicio              DateTime  @default(now()) @map("fecha_inicio")
-  fechaFin                 DateTime? @map("fecha_fin")
-  totalEfectivoEsperado    Float     @default(0) @map("total_efectivo_esperado")
-  totalEfectivoEntregado   Float?    @map("total_efectivo_entregado")
-  totalTarjeta             Float     @default(0) @map("total_tarjeta")
-  cerrado                  Boolean   @default(false)
-  notasCierre              String?   @map("notas_cierre")
+  id                     Int       @id @default(autoincrement())
+  recolectorId           Int       @map("recolector_id")
+  fechaInicio            DateTime  @default(now()) @map("fecha_inicio")
+  fechaFin               DateTime? @map("fecha_fin")
+  totalEfectivoEsperado  Float     @default(0) @map("total_efectivo_esperado")
+  totalEfectivoEntregado Float?    @map("total_efectivo_entregado")
+  totalTarjeta           Float     @default(0) @map("total_tarjeta")
+  cerrado                Boolean   @default(false)
+  notasCierre            String?   @map("notas_cierre")
 
   recolector Recolector @relation(fields: [recolectorId], references: [id])
   donaciones Donacion[]
@@ -50,11 +49,11 @@ model TurnoRecogida {
 }
 
 model Producto {
-  id        Int      @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   nombre    String
-  categoria String   // bebe | higiene_femenina | no_perecedero | otros
+  categoria String // bebe | higiene_femenina | no_perecedero | otros
   precio    Float
-  activo    Boolean  @default(true)
+  activo    Boolean @default(true)
 
   lineas DonacionLinea[]
 
@@ -62,17 +61,17 @@ model Producto {
 }
 
 model Donacion {
-  id                        Int      @id @default(autoincrement())
+  id                         Int      @id @default(autoincrement())
   recolectorId               Int      @map("recolector_id")
   turnoId                    Int      @map("turno_id")
   metodoPago                 String   @map("metodo_pago") // tarjeta | efectivo
-  importeTotal                Float    @map("importe_total")
-  importeRecibidoEfectivo     Float?   @map("importe_recibido_efectivo")
-  confirmacionDatafono         Boolean  @default(false) @map("confirmacion_datafono")
-  nombreDonante                String?  @map("nombre_donante")
-  emailDonante                  String?  @map("email_donante")
-  emailAgradecimientoEnviado    Boolean  @default(false) @map("email_agradecimiento_enviado")
-  fecha                          DateTime @default(now())
+  importeTotal               Float    @map("importe_total")
+  importeRecibidoEfectivo    Float?   @map("importe_recibido_efectivo")
+  confirmacionDatafono       Boolean  @default(false) @map("confirmacion_datafono")
+  nombreDonante              String?  @map("nombre_donante")
+  emailDonante               String?  @map("email_donante")
+  emailAgradecimientoEnviado Boolean  @default(false) @map("email_agradecimiento_enviado")
+  fecha                      DateTime @default(now())
 
   recolector Recolector      @relation(fields: [recolectorId], references: [id])
   turno      TurnoRecogida   @relation(fields: [turnoId], references: [id])
@@ -82,11 +81,11 @@ model Donacion {
 }
 
 model DonacionLinea {
-  id              Int   @id @default(autoincrement())
-  donacionId      Int   @map("donacion_id")
-  productoId      Int   @map("producto_id")
-  cantidad        Int
-  precioUnitario  Float @map("precio_unitario")
+  id             Int   @id @default(autoincrement())
+  donacionId     Int   @map("donacion_id")
+  productoId     Int   @map("producto_id")
+  cantidad       Int
+  precioUnitario Float @map("precio_unitario")
 
   donacion Donacion @relation(fields: [donacionId], references: [id], onDelete: Cascade)
   producto Producto @relation(fields: [productoId], references: [id])

@@ -25,7 +25,8 @@ const listarRecolectores = asyncHandler(async (req, res) => {
 
 // POST /api/admin/recolectores - alta de recolector (o admin) por parte de la hermandad
 const crearRecolector = asyncHandler(async (req, res) => {
-  const { nombre, apellidos, email, password, dniUltimosDigitos, hermandad, zonaTexto, rol } = req.body;
+  const { nombre, apellidos, password, dniUltimosDigitos, hermandad, zonaTexto, rol } = req.body;
+  const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
 
   if (!nombre || !apellidos || !email || !password || !dniUltimosDigitos || !hermandad || !zonaTexto) {
     return res.status(400).json({ error: 'Faltan campos obligatorios.' });

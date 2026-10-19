@@ -13,9 +13,12 @@ export default function Navbar() {
   return (
     <header className="navbar">
       <Link to="/" className="navbar-brand">
-        <span className="navbar-brand-icon" aria-hidden="true">
-          🤝
-        </span>
+        <img
+          className="navbar-brand-icon"
+          src="https://res.cloudinary.com/dfc5psy3z/image/upload/v1792401103/Escudo-_qnafgb.svg"
+          alt=""
+          aria-hidden="true"
+        />
         <span className="navbar-brand-text">
           <span className="navbar-brand-title">Recogidas Solidarias</span>
           <span className="navbar-brand-subtitle">Carmona</span>

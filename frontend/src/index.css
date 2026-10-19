@@ -89,9 +89,13 @@ a {
   gap: 0.6rem;
 }
 
+/* El SVG del escudo es una hoja vertical con el escudo centrado: se recorta
+   a un cuadrado para eliminar los márgenes superior e inferior. */
 .navbar-brand-icon {
-  font-size: 1.6rem;
-  line-height: 1;
+  width: 2.6rem;
+  height: 2.6rem;
+  object-fit: cover;
+  display: block;
 }
 
 .navbar-brand-text {

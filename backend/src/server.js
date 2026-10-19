@@ -32,7 +32,7 @@ app.use(
 app.use(express.json({ limit: '100kb' }));
 app.use(morgan('dev'));
 
-// Limita intentos de login/registro para dificultar fuerza bruta y credential stuffing.
+// Limita intentos de login para dificultar fuerza bruta y credential stuffing.
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 20,
@@ -41,7 +41,6 @@ const authLimiter = rateLimit({
   message: { error: 'Demasiados intentos. Inténtalo de nuevo en unos minutos.' },
 });
 app.use('/api/auth/login', authLimiter);
-app.use('/api/auth/registro', authLimiter);
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 

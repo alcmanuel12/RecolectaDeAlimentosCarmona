@@ -43,12 +43,6 @@ export function AuthProvider({ children }) {
     return datos.recolector;
   }
 
-  async function registrar(datosFormulario) {
-    const datos = await authApi.registro(datosFormulario);
-    guardarSesion(datos);
-    return datos.recolector;
-  }
-
   function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('recolector');
@@ -59,7 +53,6 @@ export function AuthProvider({ children }) {
     recolector,
     cargando,
     login,
-    registrar,
     logout,
     esAdmin: recolector?.rol === 'admin',
   };

@@ -240,6 +240,10 @@ a {
   flex: 1;
 }
 
+.form-inline .privacy-notice {
+  flex-basis: 100%;
+}
+
 .form label {
   display: flex;
   flex-direction: column;
@@ -601,7 +605,7 @@ a {
   color: var(--color-teal-dark);
 }
 
-/* Pantallas de acceso (login / registro) en dos paneles */
+/* Pantalla de acceso (login) en dos paneles */
 .auth-layout {
   display: grid;
   grid-template-columns: minmax(280px, 0.85fr) minmax(320px, 1fr);

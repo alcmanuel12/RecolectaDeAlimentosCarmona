@@ -4,7 +4,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 
 import Login from './pages/Login';
-import Registro from './pages/Registro';
 import PanelRecolector from './pages/PanelRecolector';
 import CarritoDonacion from './pages/CarritoDonacion';
 import CierreTurno from './pages/CierreTurno';
@@ -27,7 +26,6 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Inicio />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/registro" element={<Registro />} />
             <Route path="/transparencia" element={<Transparencia />} />
             <Route
               path="/carrito"

@@ -16,40 +16,6 @@ function serializar(recolector) {
   return resto;
 }
 
-// POST /api/auth/registro
-const registro = asyncHandler(async (req, res) => {
-  const { nombre, apellidos, email, password, dniUltimosDigitos, hermandad, zonaTexto } = req.body;
-
-  if (!nombre || !apellidos || !email || !password || !dniUltimosDigitos || !hermandad || !zonaTexto) {
-    return res.status(400).json({ error: 'Faltan campos obligatorios.' });
-  }
-  if (password.length < 8) {
-    return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres.' });
-  }
-
-  const existente = await prisma.recolector.findUnique({ where: { email } });
-  if (existente) {
-    return res.status(409).json({ error: 'Ya existe un recolector con ese email.' });
-  }
-
-  const passwordHash = await bcrypt.hash(password, 10);
-
-  const recolector = await prisma.recolector.create({
-    data: {
-      nombre,
-      apellidos,
-      email,
-      dniUltimosDigitos,
-      hermandad,
-      zonaTexto,
-      passwordHash,
-    },
-  });
-
-  const token = firmarToken(recolector);
-  res.status(201).json({ token, recolector: serializar(recolector) });
-});
-
 // POST /api/auth/login
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -78,4 +44,4 @@ const me = asyncHandler(async (req, res) => {
   res.json({ recolector: serializar(recolector) });
 });
 
-module.exports = { registro, login, me };
+module.exports = { login, me };

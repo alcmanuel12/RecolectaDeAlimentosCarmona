@@ -33,12 +33,9 @@ export default function Navbar() {
             </button>
           </>
         ) : (
-          <>
-            <Link to="/login">Entrar</Link>
-            <Link to="/registro" className="navbar-cta">
-              Registrarse
-            </Link>
-          </>
+          <Link to="/login" className="navbar-cta">
+            Entrar
+          </Link>
         )}
       </nav>
     </header>

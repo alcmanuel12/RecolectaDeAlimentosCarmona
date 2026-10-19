@@ -32,27 +32,42 @@ async function main() {
     }
   }
 
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@hermandad.local';
-  const adminPassword = process.env.ADMIN_PASSWORD || 'CambiaEstaClave123!';
+  // Usuarios del entorno de pruebas. Si ya existen, se restablece su
+  // contraseña, rol y estado para que el entorno quede siempre igual.
+  const usuarios = [
+    {
+      email: process.env.ADMIN_EMAIL || 'admin@admin.com',
+      password: process.env.ADMIN_PASSWORD || '12345678',
+      nombre: 'Admin',
+      apellidos: 'Hermandad',
+      rol: 'admin',
+    },
+    {
+      email: process.env.RECOLECTOR_EMAIL || 'usuario@usuario.com',
+      password: process.env.RECOLECTOR_PASSWORD || '12345678',
+      nombre: 'Usuario',
+      apellidos: 'Recolector',
+      rol: 'recolector',
+    },
+  ];
 
-  const adminExistente = await prisma.recolector.findUnique({ where: { email: adminEmail } });
-  if (!adminExistente) {
-    console.log(`Creando usuario administrador (${adminEmail})...`);
-    const passwordHash = await bcrypt.hash(adminPassword, 10);
-    await prisma.recolector.create({
-      data: {
-        nombre: 'Admin',
-        apellidos: 'Hermandad',
-        email: adminEmail,
+  for (const u of usuarios) {
+    console.log(`Creando/actualizando usuario ${u.rol} (${u.email})...`);
+    const passwordHash = await bcrypt.hash(u.password, 10);
+    await prisma.recolector.upsert({
+      where: { email: u.email },
+      update: { passwordHash, rol: u.rol, activo: true },
+      create: {
+        nombre: u.nombre,
+        apellidos: u.apellidos,
+        email: u.email,
         dniUltimosDigitos: '0000A',
         hermandad: 'Hermandad Ejemplo',
         zonaTexto: 'Sede central',
         passwordHash,
-        rol: 'admin',
+        rol: u.rol,
       },
     });
-  } else {
-    console.log('El usuario administrador ya existe, se omite.');
   }
 
   console.log('Seed completado.');

@@ -20,12 +20,18 @@ cd backend
 npm install
 cp .env.example .env      # revisa/edita los valores, sobre todo JWT_SECRET y SMTP
 npm run prisma:migrate    # crea la BBDD SQLite y aplica el esquema
-npm run seed               # catálogo de productos + usuario admin de ejemplo
+npm run seed               # catálogo de productos + usuarios de prueba
 npm run dev                 # arranca en http://localhost:4000
 ```
 
-Usuario administrador de ejemplo (definido en `.env`, `ADMIN_EMAIL`/`ADMIN_PASSWORD`):
-`admin@hermandad.local` / `CambiaEstaClave123!` — **cámbialo antes de producción**.
+Usuarios de prueba (definidos en `.env`, `ADMIN_*` y `RECOLECTOR_*`):
+
+| Rol        | Email                 | Contraseña |
+|------------|-----------------------|------------|
+| Admin      | `admin@admin.com`     | `12345678` |
+| Recolector | `usuario@usuario.com` | `12345678` |
+
+**Cámbialos antes de producción.**
 
 ### 2. Frontend
 
@@ -38,7 +44,8 @@ npm run dev                 # arranca en http://localhost:5173
 
 ## Roles
 
-- **Recolector**: se registra, abre un turno, registra donaciones y lo cierra.
+- **Recolector**: lo da de alta un administrador (no hay registro público); abre
+  un turno, registra donaciones y lo cierra.
 - **Administrador**: gestiona recolectores, catálogo de productos, ve todos los
   turnos y exporta informes en CSV. Se marca con `rol: "admin"` en la tabla de
   recolectores (no hay una tabla separada de administradores).

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { extraerError } from '../api/client';
 
@@ -52,9 +52,7 @@ export default function Login() {
               {enviando ? 'Entrando…' : 'Entrar'}
             </button>
           </form>
-          <p>
-            ¿No tienes cuenta todavía? <Link to="/registro">Regístrate como recolector</Link>
-          </p>
+          <p>¿No tienes cuenta todavía? Pide al administrador de tu hermandad que te dé de alta.</p>
         </div>
       </div>
     </div>

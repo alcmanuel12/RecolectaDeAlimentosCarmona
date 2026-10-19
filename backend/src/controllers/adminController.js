@@ -30,6 +30,9 @@ const crearRecolector = asyncHandler(async (req, res) => {
   if (!nombre || !apellidos || !email || !password || !dniUltimosDigitos || !hermandad || !zonaTexto) {
     return res.status(400).json({ error: 'Faltan campos obligatorios.' });
   }
+  if (password.length < 8) {
+    return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres.' });
+  }
 
   const existente = await prisma.recolector.findUnique({ where: { email } });
   if (existente) return res.status(409).json({ error: 'Ya existe un recolector con ese email.' });

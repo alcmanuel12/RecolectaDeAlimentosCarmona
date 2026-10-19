@@ -108,8 +108,14 @@ export default function AdminRecolectores() {
             <input type="password" minLength={8} value={form.password} onChange={handleChange('password')} required />
           </label>
           <label>
-            DNI (últimos dígitos)
-            <input value={form.dniUltimosDigitos} onChange={handleChange('dniUltimosDigitos')} required />
+            Últimos dígitos del DNI
+            <input
+              value={form.dniUltimosDigitos}
+              onChange={handleChange('dniUltimosDigitos')}
+              placeholder="p. ej. 1234A"
+              maxLength={8}
+              required
+            />
           </label>
           <label>
             Hermandad
@@ -126,6 +132,14 @@ export default function AdminRecolectores() {
               <option value="admin">Administrador</option>
             </select>
           </label>
+          <p className="privacy-notice">
+            <strong>Aviso de privacidad (informa al recolector):</strong> los últimos dígitos del DNI
+            se piden únicamente para identificarle de forma inequívoca como recolector responsable de
+            un turno de donaciones y evitar suplantaciones. Estos datos, junto con su nombre y
+            apellidos, se conservan mientras mantenga la condición de recolector y hasta 5 años
+            después por motivos de justificación contable, conforme a la normativa aplicable. No se
+            ceden a terceros salvo obligación legal.
+          </p>
           <button className="btn btn-primary" type="submit" disabled={enviando}>
             {enviando ? 'Guardando…' : 'Guardar'}
           </button>

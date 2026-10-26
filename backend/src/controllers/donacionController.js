@@ -2,6 +2,7 @@ const prisma = require('../config/db');
 const asyncHandler = require('../utils/asyncHandler');
 const { METODOS_PAGO } = require('../utils/enums');
 const { enviarAgradecimiento } = require('../services/emailService');
+const { parsearId, esEmailValido } = require('../utils/validacion');
 
 // POST /api/donaciones
 // body: { turnoId, metodoPago, lineas: [{ productoId, cantidad }], importeRecibidoEfectivo?,
@@ -24,7 +25,17 @@ const crear = asyncHandler(async (req, res) => {
     return res.status(400).json({ error: `metodoPago inválido. Debe ser una de: ${METODOS_PAGO.join(', ')}` });
   }
 
-  const turno = await prisma.turnoRecogida.findUnique({ where: { id: Number(turnoId) } });
+  const turnoIdNum = parsearId(turnoId);
+  if (!turnoIdNum) return res.status(400).json({ error: 'turnoId inválido.' });
+  if (nombreDonante !== undefined && nombreDonante !== null && (typeof nombreDonante !== 'string' || nombreDonante.length > 100)) {
+    return res.status(400).json({ error: 'Nombre de donante inválido (máximo 100 caracteres).' });
+  }
+  const emailLimpio = typeof emailDonante === 'string' ? emailDonante.trim() : '';
+  if (emailDonante && !esEmailValido(emailLimpio)) {
+    return res.status(400).json({ error: 'Email de donante inválido.' });
+  }
+
+  const turno = await prisma.turnoRecogida.findUnique({ where: { id: turnoIdNum } });
   if (!turno) return res.status(404).json({ error: 'Turno no encontrado.' });
   if (turno.recolectorId !== req.usuario.id) {
     return res.status(403).json({ error: 'No puedes registrar donaciones en un turno que no es tuyo.' });
@@ -34,8 +45,11 @@ const crear = asyncHandler(async (req, res) => {
   }
 
   // Cargar productos y calcular el importe con el precio actual (snapshot).
-  const productoIds = lineas.map((l) => Number(l.productoId));
-  const productos = await prisma.producto.findMany({ where: { id: { in: productoIds } } });
+  const productoIds = lineas.map((l) => parsearId(l?.productoId));
+  if (productoIds.some((pid) => pid === null)) {
+    return res.status(400).json({ error: 'Identificador de producto inválido en las líneas.' });
+  }
+  const productos = await prisma.producto.findMany({ where: { id: { in: productoIds }, activo: true } });
   const productosPorId = new Map(productos.map((p) => [p.id, p]));
 
   let importeTotal = 0;
@@ -44,7 +58,7 @@ const crear = asyncHandler(async (req, res) => {
     const producto = productosPorId.get(Number(linea.productoId));
     const cantidad = Number(linea.cantidad);
     if (!producto) {
-      return res.status(400).json({ error: `Producto ${linea.productoId} no encontrado.` });
+      return res.status(400).json({ error: `Producto ${linea.productoId} no encontrado o no disponible.` });
     }
     if (!Number.isInteger(cantidad) || cantidad <= 0) {
       return res.status(400).json({ error: `Cantidad inválida para el producto ${producto.nombre}.` });
@@ -61,8 +75,15 @@ const crear = asyncHandler(async (req, res) => {
       error: 'Debes confirmar que el datáfono ha aprobado la operación (confirmacionDatafono).',
     });
   }
-  if (metodoPago === 'efectivo' && typeof importeRecibidoEfectivo !== 'number') {
-    return res.status(400).json({ error: 'importeRecibidoEfectivo es obligatorio para donaciones en efectivo.' });
+  if (metodoPago === 'efectivo') {
+    if (typeof importeRecibidoEfectivo !== 'number' || !Number.isFinite(importeRecibidoEfectivo)) {
+      return res.status(400).json({ error: 'importeRecibidoEfectivo es obligatorio para donaciones en efectivo.' });
+    }
+    if (importeRecibidoEfectivo + 0.001 < importeTotal) {
+      return res.status(400).json({
+        error: `El importe recibido (${importeRecibidoEfectivo.toFixed(2)} €) es inferior al total (${importeTotal.toFixed(2)} €).`,
+      });
+    }
   }
 
   const donacion = await prisma.$transaction(async (tx) => {
@@ -75,7 +96,7 @@ const crear = asyncHandler(async (req, res) => {
         importeRecibidoEfectivo: metodoPago === 'efectivo' ? importeRecibidoEfectivo : null,
         confirmacionDatafono: metodoPago === 'tarjeta' ? Boolean(confirmacionDatafono) : false,
         nombreDonante: nombreDonante || null,
-        emailDonante: emailDonante || null,
+        emailDonante: emailLimpio || null,
         lineas: { create: lineasParaCrear },
       },
       include: { lineas: { include: { producto: true } } },
@@ -97,9 +118,9 @@ const crear = asyncHandler(async (req, res) => {
   res.status(201).json({ donacion });
 
   // Correo de agradecimiento: async, no bloquea la respuesta ya enviada.
-  if (emailDonante) {
+  if (emailLimpio) {
     enviarAgradecimiento({
-      email: emailDonante,
+      email: emailLimpio,
       nombre: nombreDonante,
       importeTotal: donacion.importeTotal,
       lineas: donacion.lineas,
@@ -117,7 +138,8 @@ const crear = asyncHandler(async (req, res) => {
 
 // GET /api/donaciones/:id
 const obtener = asyncHandler(async (req, res) => {
-  const id = Number(req.params.id);
+  const id = parsearId(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Id de donación inválido.' });
   const donacion = await prisma.donacion.findUnique({
     where: { id },
     include: { lineas: { include: { producto: true } } },
@@ -134,14 +156,17 @@ const listarPorTurno = asyncHandler(async (req, res) => {
   const { turnoId } = req.query;
   if (!turnoId) return res.status(400).json({ error: 'turnoId es obligatorio.' });
 
-  const turno = await prisma.turnoRecogida.findUnique({ where: { id: Number(turnoId) } });
+  const turnoIdNum = parsearId(turnoId);
+  if (!turnoIdNum) return res.status(400).json({ error: 'turnoId inválido.' });
+
+  const turno = await prisma.turnoRecogida.findUnique({ where: { id: turnoIdNum } });
   if (!turno) return res.status(404).json({ error: 'Turno no encontrado.' });
   if (turno.recolectorId !== req.usuario.id && req.usuario.rol !== 'admin') {
     return res.status(403).json({ error: 'No tienes permiso para ver estas donaciones.' });
   }
 
   const donaciones = await prisma.donacion.findMany({
-    where: { turnoId: Number(turnoId) },
+    where: { turnoId: turnoIdNum },
     include: { lineas: { include: { producto: true } } },
     orderBy: { fecha: 'desc' },
   });

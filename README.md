@@ -31,7 +31,7 @@ Usuarios de prueba (definidos en `.env`, `ADMIN_*` y `RECOLECTOR_*`):
 | Admin      | `admin@admin.com`     | `12345678` |
 | Recolector | `usuario@usuario.com` | `12345678` |
 
-**Cámbialos antes de producción.**
+**Solo para desarrollo. Cámbialos antes de producción.** El seed restablece estas contraseñas cada vez que se ejecuta, por lo que se niega a correr con `NODE_ENV=production` (salvo `SEED_FORCE=true`).
 
 ### 2. Frontend
 

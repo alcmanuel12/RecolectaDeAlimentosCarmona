@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const { Parser } = require('json2csv');
 const prisma = require('../config/db');
 const asyncHandler = require('../utils/asyncHandler');
+const { ROLES } = require('../utils/enums');
+const { parsearId, parsearFecha, esEmailValido } = require('../utils/validacion');
 
 function serializar(recolector) {
   const { passwordHash, ...resto } = recolector;
@@ -31,7 +33,10 @@ const crearRecolector = asyncHandler(async (req, res) => {
   if (!nombre || !apellidos || !email || !password || !dniUltimosDigitos || !hermandad || !zonaTexto) {
     return res.status(400).json({ error: 'Faltan campos obligatorios.' });
   }
-  if (password.length < 8) {
+  if (!esEmailValido(email)) {
+    return res.status(400).json({ error: 'Email inválido.' });
+  }
+  if (typeof password !== 'string' || password.length < 8) {
     return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres.' });
   }
 
@@ -56,8 +61,25 @@ const crearRecolector = asyncHandler(async (req, res) => {
 
 // PUT /api/admin/recolectores/:id
 const actualizarRecolector = asyncHandler(async (req, res) => {
-  const id = Number(req.params.id);
+  const id = parsearId(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Id de recolector inválido.' });
   const { nombre, apellidos, hermandad, zonaTexto, activo, rol, password } = req.body;
+
+  if (rol !== undefined && !ROLES.includes(rol)) {
+    return res.status(400).json({ error: `Rol inválido. Debe ser uno de: ${ROLES.join(', ')}` });
+  }
+  if (activo !== undefined && typeof activo !== 'boolean') {
+    return res.status(400).json({ error: 'activo debe ser true o false.' });
+  }
+  if (id === req.usuario.id && (activo === false || (rol !== undefined && rol !== 'admin'))) {
+    return res.status(400).json({ error: 'No puedes desactivarte ni quitarte el rol de administrador a ti mismo.' });
+  }
+  if (password !== undefined && password !== '' && (typeof password !== 'string' || password.length < 8)) {
+    return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres.' });
+  }
+
+  const existente = await prisma.recolector.findUnique({ where: { id } });
+  if (!existente) return res.status(404).json({ error: 'Recolector no encontrado.' });
 
   const data = { nombre, apellidos, hermandad, zonaTexto, activo, rol };
   if (password) {
@@ -70,7 +92,13 @@ const actualizarRecolector = asyncHandler(async (req, res) => {
 
 // DELETE /api/admin/recolectores/:id - baja lógica (desactivar), no se borra el histórico
 const bajaRecolector = asyncHandler(async (req, res) => {
-  const id = Number(req.params.id);
+  const id = parsearId(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Id de recolector inválido.' });
+  if (id === req.usuario.id) {
+    return res.status(400).json({ error: 'No puedes darte de baja a ti mismo.' });
+  }
+  const existente = await prisma.recolector.findUnique({ where: { id } });
+  if (!existente) return res.status(404).json({ error: 'Recolector no encontrado.' });
   const recolector = await prisma.recolector.update({ where: { id }, data: { activo: false } });
   res.json({ recolector: serializar(recolector) });
 });
@@ -82,8 +110,16 @@ const exportarDonacionesCsv = asyncHandler(async (req, res) => {
   const where = {};
   if (desde || hasta) {
     where.fecha = {};
-    if (desde) where.fecha.gte = new Date(desde);
-    if (hasta) where.fecha.lte = new Date(hasta);
+    if (desde) {
+      const d = parsearFecha(desde);
+      if (!d) return res.status(400).json({ error: 'Fecha "desde" inválida.' });
+      where.fecha.gte = d;
+    }
+    if (hasta) {
+      const h = parsearFecha(hasta);
+      if (!h) return res.status(400).json({ error: 'Fecha "hasta" inválida.' });
+      where.fecha.lte = h;
+    }
   }
   if (hermandad || zona) {
     where.recolector = {};

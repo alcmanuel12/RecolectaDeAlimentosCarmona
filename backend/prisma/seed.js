@@ -24,6 +24,10 @@ const PRODUCTOS = [
 ];
 
 async function main() {
+  // Evita restablecer contraseñas conocidas en una base de datos de producción.
+  if (process.env.NODE_ENV === 'production' && process.env.SEED_FORCE !== 'true') {
+    throw new Error('El seed restablece usuarios de prueba y no se ejecuta con NODE_ENV=production (usa SEED_FORCE=true para forzarlo).');
+  }
   console.log('Sembrando catálogo de productos...');
   for (const p of PRODUCTOS) {
     const existente = await prisma.producto.findFirst({ where: { nombre: p.nombre } });

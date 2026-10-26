@@ -1,8 +1,11 @@
 const jwt = require('jsonwebtoken');
+const prisma = require('../config/db');
 
-// Comprueba que la petición trae un JWT válido y adjunta el payload
-// (id, rol, email) a req.usuario para que los controladores lo usen.
-function requireAuth(req, res, next) {
+// Comprueba que la petición trae un JWT válido y adjunta (id, rol, email) a
+// req.usuario. El rol y el estado activo se leen de la base de datos en cada
+// petición, de modo que una baja o un cambio de rol surten efecto al instante
+// y no al caducar el token.
+async function requireAuth(req, res, next) {
   const header = req.headers.authorization || '';
   const [scheme, token] = header.split(' ');
 
@@ -10,12 +13,25 @@ function requireAuth(req, res, next) {
     return res.status(401).json({ error: 'No autenticado. Falta el token.' });
   }
 
+  let payload;
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.usuario = payload;
-    next();
+    payload = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
     return res.status(401).json({ error: 'Token inválido o caducado.' });
+  }
+
+  try {
+    const recolector = await prisma.recolector.findUnique({
+      where: { id: payload.id },
+      select: { id: true, rol: true, email: true, activo: true },
+    });
+    if (!recolector || !recolector.activo) {
+      return res.status(401).json({ error: 'Usuario no válido o dado de baja.' });
+    }
+    req.usuario = { id: recolector.id, rol: recolector.rol, email: recolector.email };
+    next();
+  } catch (err) {
+    next(err);
   }
 }
 

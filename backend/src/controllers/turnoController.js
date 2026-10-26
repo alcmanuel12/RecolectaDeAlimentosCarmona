@@ -1,5 +1,6 @@
 const prisma = require('../config/db');
 const asyncHandler = require('../utils/asyncHandler');
+const { parsearId } = require('../utils/validacion');
 
 // GET /api/turnos/activo - turno abierto del recolector autenticado (o null)
 const obtenerActivo = asyncHandler(async (req, res) => {
@@ -27,10 +28,14 @@ const abrir = asyncHandler(async (req, res) => {
 
 // GET /api/turnos/:id - detalle de un turno (dueño o admin)
 const obtener = asyncHandler(async (req, res) => {
-  const id = Number(req.params.id);
+  const id = parsearId(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Id de turno inválido.' });
   const turno = await prisma.turnoRecogida.findUnique({
     where: { id },
-    include: { donaciones: { include: { lineas: { include: { producto: true } } } }, recolector: true },
+    include: {
+      donaciones: { include: { lineas: { include: { producto: true } } } },
+      recolector: { select: { id: true, nombre: true, apellidos: true, hermandad: true, zonaTexto: true } },
+    },
   });
   if (!turno) return res.status(404).json({ error: 'Turno no encontrado.' });
   if (turno.recolectorId !== req.usuario.id && req.usuario.rol !== 'admin') {
@@ -41,7 +46,8 @@ const obtener = asyncHandler(async (req, res) => {
 
 // POST /api/turnos/:id/cerrar - cierra el turno, contrastando el efectivo entregado
 const cerrar = asyncHandler(async (req, res) => {
-  const id = Number(req.params.id);
+  const id = parsearId(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Id de turno inválido.' });
   const { totalEfectivoEntregado, notasCierre } = req.body;
 
   const turno = await prisma.turnoRecogida.findUnique({ where: { id } });
@@ -52,7 +58,7 @@ const cerrar = asyncHandler(async (req, res) => {
   if (turno.cerrado) {
     return res.status(409).json({ error: 'Este turno ya está cerrado.' });
   }
-  if (typeof totalEfectivoEntregado !== 'number' || totalEfectivoEntregado < 0) {
+  if (typeof totalEfectivoEntregado !== 'number' || !Number.isFinite(totalEfectivoEntregado) || totalEfectivoEntregado < 0) {
     return res.status(400).json({ error: 'totalEfectivoEntregado es obligatorio y debe ser un número >= 0.' });
   }
 
@@ -82,7 +88,11 @@ const listar = asyncHandler(async (req, res) => {
   const { cerrado, recolectorId } = req.query;
   const where = {};
   if (cerrado !== undefined) where.cerrado = cerrado === 'true';
-  if (recolectorId) where.recolectorId = Number(recolectorId);
+  if (recolectorId) {
+    const rid = parsearId(recolectorId);
+    if (!rid) return res.status(400).json({ error: 'recolectorId inválido.' });
+    where.recolectorId = rid;
+  }
 
   const turnos = await prisma.turnoRecogida.findMany({
     where,

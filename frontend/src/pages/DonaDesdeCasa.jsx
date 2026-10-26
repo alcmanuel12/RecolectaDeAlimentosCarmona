@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
+import Escudo from '../components/Escudo';
 
 // Datos de donación. Provisionales: se sustituyen con las variables
 // VITE_BIZUM_TELEFONO, VITE_IBAN y VITE_TITULAR_CUENTA al desplegar.
@@ -43,6 +44,7 @@ export default function DonaDesdeCasa() {
 
   return (
     <div className="page page-narrow dona-page">
+      <Escudo className="escudo-centrado" size={64} />
       <h1>Dona desde casa</h1>
       <p className="page-subtitle">
         Si no puedes encontrarnos en la calle, puedes ayudar igualmente por Bizum o con una

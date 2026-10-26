@@ -1327,3 +1327,65 @@ a {
   font-size: 1.1rem;
   word-break: break-word;
 }
+
+/* Escudo */
+.escudo {
+  display: block;
+  object-fit: contain;
+}
+
+.landing-escudo {
+  margin: 0 auto 1rem;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
+}
+
+.escudo-centrado {
+  margin: 0 auto 0.8rem;
+}
+
+.dona-page,
+.dona-page h1,
+.dona-page .page-subtitle {
+  text-align: center;
+}
+
+.dona-page .dona-datos {
+  text-align: left;
+}
+
+.auth-hero .escudo {
+  margin-bottom: 1rem;
+}
+
+/* Resumen de la donación */
+.resumen-donacion {
+  gap: 1.1rem;
+  padding: 1.6rem 1.4rem;
+}
+
+.resumen-donacion h2 {
+  text-align: center;
+  margin: 0;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.resumen-donacion .carrito,
+.resumen-donacion .carrito-vacio {
+  margin: 0;
+}
+
+.resumen-donacion .carrito-vacio {
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
+.resumen-donacion .carrito-total {
+  margin-bottom: 0;
+}
+
+.resumen-donacion .btn-primary {
+  width: 100%;
+  justify-content: center;
+  margin-top: 0.4rem;
+}

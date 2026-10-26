@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import Escudo from '../components/Escudo';
 
 const DATOS = [
   { cifra: '1 de cada 4', texto: 'familias de nuestro entorno tiene dificultades para llenar la despensa cada mes.' },
@@ -17,6 +18,7 @@ export default function Landing() {
     <div className="landing">
       <section className="landing-hero">
         <div className="landing-hero-inner">
+          <Escudo className="landing-escudo" size={96} />
           <span className="landing-badge">Recogida solidaria · Carmona</span>
           <h1>Una despensa llena es una familia con esperanza</h1>
           <p>

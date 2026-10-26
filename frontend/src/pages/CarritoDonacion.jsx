@@ -210,7 +210,7 @@ export default function CarritoDonacion() {
               ))}
             </div>
 
-            <form id="resumen" className="resumen-donacion" onSubmit={handleSubmit}>
+            <form id="resumen" className="resumen-donacion form" onSubmit={handleSubmit}>
               <h2>Resumen</h2>
               <Carrito lineas={lineasCarrito} total={total} onQuitar={(producto) => cambiarCantidad(producto, 0)} />
 

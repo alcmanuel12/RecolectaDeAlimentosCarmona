@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { extraerError } from '../api/client';
+import Escudo from '../components/Escudo';
 
 export default function Login() {
   const { login } = useAuth();
@@ -28,6 +29,7 @@ export default function Login() {
   return (
     <div className="auth-layout">
       <div className="auth-hero">
+        <Escudo size={72} />
         <span className="auth-hero-badge">Recogidas Solidarias</span>
         <h2>Bienvenido de nuevo</h2>
         <p>

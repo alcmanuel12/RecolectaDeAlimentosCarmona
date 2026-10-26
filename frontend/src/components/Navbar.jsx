@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { URL_ESCUDO } from './Escudo';
 
 export default function Navbar() {
   const { recolector, logout, esAdmin } = useAuth();
@@ -15,7 +16,7 @@ export default function Navbar() {
       <Link to="/" className="navbar-brand">
         <img
           className="navbar-brand-icon"
-          src="https://res.cloudinary.com/dfc5psy3z/image/upload/v1792401103/Escudo-_qnafgb.svg"
+          src={URL_ESCUDO}
           alt=""
           aria-hidden="true"
         />
@@ -25,6 +26,7 @@ export default function Navbar() {
         </span>
       </Link>
       <nav className="navbar-links">
+        <Link to="/">Inicio</Link>
         <Link to="/dona-desde-casa">Dona desde casa</Link>
         <Link to="/transparencia">Transparencia</Link>
         {recolector && !esAdmin && <Link to="/turno">Mi turno</Link>}

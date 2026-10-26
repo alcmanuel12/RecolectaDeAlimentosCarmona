@@ -8,7 +8,7 @@ export default function ProtectedRoute({ children, soloAdmin = false }) {
 
   if (cargando) return <div className="page-loading">Cargando…</div>;
   if (!recolector) return <Navigate to="/login" replace />;
-  if (soloAdmin && recolector.rol !== 'admin') return <Navigate to="/" replace />;
+  if (soloAdmin && recolector.rol !== 'admin') return <Navigate to="/turno" replace />;
 
   return children;
 }

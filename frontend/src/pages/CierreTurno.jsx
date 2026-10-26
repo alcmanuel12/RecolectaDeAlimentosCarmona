@@ -37,7 +37,7 @@ export default function CierreTurno() {
         totalEfectivoEntregado: Number(totalEfectivoEntregado),
         notasCierre: notasCierre || undefined,
       });
-      navigate('/');
+      navigate('/turno');
     } catch (err) {
       if (err.response?.status === 400 && err.response.data?.totalEfectivoEsperado !== undefined) {
         setRequiereNota(true);

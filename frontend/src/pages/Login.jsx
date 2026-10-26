@@ -17,7 +17,7 @@ export default function Login() {
     setEnviando(true);
     try {
       const recolector = await login(email, password);
-      navigate(recolector.rol === 'admin' ? '/admin' : '/');
+      navigate(recolector.rol === 'admin' ? '/admin' : '/turno');
     } catch (err) {
       setError(extraerError(err, 'No se ha podido iniciar sesión.'));
     } finally {
@@ -52,7 +52,6 @@ export default function Login() {
               {enviando ? 'Entrando…' : 'Entrar'}
             </button>
           </form>
-          <p>¿No tienes cuenta todavía? Pide al administrador de tu hermandad que te dé de alta.</p>
         </div>
       </div>
     </div>

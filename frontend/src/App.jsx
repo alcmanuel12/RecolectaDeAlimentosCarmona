@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
@@ -9,11 +9,13 @@ import CarritoDonacion from './pages/CarritoDonacion';
 import CierreTurno from './pages/CierreTurno';
 import PanelAdmin from './pages/PanelAdmin';
 import Transparencia from './pages/Transparencia';
+import Landing from './pages/Landing';
+import DonaDesdeCasa from './pages/DonaDesdeCasa';
 
-function Inicio() {
+function MiTurno() {
   const { esAdmin } = useAuth();
   return (
-    <ProtectedRoute>{esAdmin ? <PanelAdmin /> : <PanelRecolector />}</ProtectedRoute>
+    <ProtectedRoute>{esAdmin ? <Navigate to="/admin" replace /> : <PanelRecolector />}</ProtectedRoute>
   );
 }
 
@@ -24,8 +26,10 @@ export default function App() {
         <Navbar />
         <main>
           <Routes>
-            <Route path="/" element={<Inicio />} />
+            <Route path="/" element={<Landing />} />
+            <Route path="/turno" element={<MiTurno />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/dona-desde-casa" element={<DonaDesdeCasa />} />
             <Route path="/transparencia" element={<Transparencia />} />
             <Route
               path="/carrito"
@@ -51,6 +55,7 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
       </BrowserRouter>

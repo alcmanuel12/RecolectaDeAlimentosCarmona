@@ -7,7 +7,7 @@ export default function Navbar() {
 
   function handleLogout() {
     logout();
-    navigate('/login');
+    navigate('/');
   }
 
   return (
@@ -25,8 +25,9 @@ export default function Navbar() {
         </span>
       </Link>
       <nav className="navbar-links">
+        <Link to="/dona-desde-casa">Dona desde casa</Link>
         <Link to="/transparencia">Transparencia</Link>
-        {recolector && !esAdmin && <Link to="/">Mi turno</Link>}
+        {recolector && !esAdmin && <Link to="/turno">Mi turno</Link>}
         {esAdmin && <Link to="/admin">Panel admin</Link>}
         {recolector ? (
           <>
@@ -35,11 +36,7 @@ export default function Navbar() {
               Cerrar sesión
             </button>
           </>
-        ) : (
-          <Link to="/login" className="navbar-cta">
-            Entrar
-          </Link>
-        )}
+        ) : null}
       </nav>
     </header>
   );

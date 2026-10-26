@@ -134,7 +134,7 @@ export default function CarritoDonacion() {
         emailDonante: emailDonante || undefined,
         lineas: lineasCarrito.map((l) => ({ productoId: l.producto.id, cantidad: l.cantidad })),
       });
-      navigate('/', { state: { donacionRegistrada: true } });
+      navigate('/turno', { state: { donacionRegistrada: true } });
     } catch (err) {
       setError(extraerError(err, 'No se ha podido registrar la donación.'));
     } finally {

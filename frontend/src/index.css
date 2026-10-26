@@ -1389,3 +1389,25 @@ a {
   justify-content: center;
   margin-top: 0.4rem;
 }
+
+/* Cambio a devolver en pagos en efectivo */
+.cambio-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  background: var(--color-teal-light);
+  color: var(--color-teal-dark);
+  border-radius: var(--radius-md);
+  padding: 0.8rem 1rem;
+  font-weight: 600;
+}
+
+.cambio-box strong {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+}
+
+.cambio-box-falta {
+  background: #fde2e2;
+  color: var(--color-error);
+}

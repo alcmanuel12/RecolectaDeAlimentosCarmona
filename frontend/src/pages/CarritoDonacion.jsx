@@ -58,6 +58,9 @@ export default function CarritoDonacion() {
     [lineasCarrito]
   );
 
+  const recibido = Number(importeRecibidoEfectivo);
+  const cambio = Math.round((recibido - total) * 100) / 100;
+
   const numeroArticulos = useMemo(
     () => lineasCarrito.reduce((suma, l) => suma + l.cantidad, 0),
     [lineasCarrito]
@@ -111,6 +114,9 @@ export default function CarritoDonacion() {
     }
     if (metodoPago === 'efectivo' && importeRecibidoEfectivo === '') {
       return 'Indica el importe recibido en efectivo.';
+    }
+    if (metodoPago === 'efectivo' && cambio < 0) {
+      return `El importe recibido es insuficiente: faltan ${(-cambio).toFixed(2)} €.`;
     }
     return '';
   }
@@ -269,6 +275,13 @@ export default function CarritoDonacion() {
                     onChange={(e) => setImporteRecibidoEfectivo(e.target.value)}
                   />
                 </label>
+              )}
+
+              {metodoPago === 'efectivo' && importeRecibidoEfectivo !== '' && total > 0 && (
+                <div className={`cambio-box ${cambio < 0 ? 'cambio-box-falta' : ''}`}>
+                  <span>{cambio < 0 ? 'Falta por cobrar' : 'Cambio a devolver'}</span>
+                  <strong>{Math.abs(cambio).toFixed(2)} €</strong>
+                </div>
               )}
 
               <button className="btn btn-primary" type="submit" disabled={enviando || lineasCarrito.length === 0}>
